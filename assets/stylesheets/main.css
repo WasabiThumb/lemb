@@ -1,0 +1,67 @@
+
+header {
+    text-align: center;
+}
+
+.auth {
+    display: block;
+    text-align: center;
+    font-family: sans-serif;
+    padding: 0.5em;
+    background-color: cornflowerblue;
+    color: antiquewhite;
+}
+
+.auth > a, .auth > span {
+    font: inherit;
+    color: inherit;
+    font-weight: bold;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+#messages {
+    height: 50vh;
+    border: 2px solid black;
+    overflow-y: scroll;
+}
+
+.message {
+    margin: 8px;
+    box-sizing: border-box;
+    display: block;
+    border-left: 4px solid blue;
+    padding-left: 4px;
+}
+
+.message.system {
+    border-left: 4px solid gray;
+}
+
+.message > h3, .message > p {
+    margin: 0;
+}
+
+#send {
+    margin-top: 6px;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    font-size: 18px;
+}
+
+#send > input[type=text] {
+    flex-grow: 1;
+    font-size: inherit;
+    border: none;
+}
+
+#send > input[type=submit] {
+    font-size: inherit;
+    border: none;
+    background-color: black;
+    color: white;
+    padding-left: 1em;
+    padding-right: 1em;
+    cursor: pointer;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Login &bull; Low-Effort Message Board</title>
+        <style>
+            .error {
+                opacity: 0;
+                color: red;
+            }
+            .error.show {
+                opacity: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <form id="login" action="javascript:void(0)">
+            <label>
+                Username
+                <input type="text" name="username" pattern="^[a-zA-Z\d_]{3,32}$">
+            </label>
+            <br>
+            <label>
+                Password
+                <input type="password" name="password" minlength="6">
+            </label>
+            <br>
+            <span class="error" id="error">OK</span>
+            <br>
+            <input type="submit" value="Login"/>
+        </form>
+        <script>
+            const error = document.querySelector("#error");
+            function showError(msg) {
+                error.innerText = msg;
+                error.classList.add("show");
+            }
+
+            async function doLogin(formData) {
+                const response = await fetch("../api/login", {
+                    method: "POST",
+                    body: formData
+                });
+                if (response.status < 200 || response.status > 299) {
+                    showError("HTTP Error " + response.status);
+                    return;
+                }
+                const json = await response.json();
+                if ("error" in json) {
+                    showError(json["error"]);
+                    return;
+                }
+                // go back to home page
+                window.location = "../";
+            }
+
+            let requestPending = false;
+            function login(formData) {
+                if (requestPending) return;
+                requestPending = true;
+                doLogin(formData).then(() => {
+                    requestPending = false;
+                }).catch((e) => {
+                    console.error(e);
+                    showError("Unexpected error");
+                    requestPending = false;
+                });
+            }
+
+            const form = document.querySelector("#login");
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                login(new FormData(form));
+            });
+        </script>
+    </body>
+</html>

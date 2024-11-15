@@ -1,0 +1,2 @@
+# Stops the content of this directory from being served
+deny from all
