@@ -1,17 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
         <title>Register &bull; Low-Effort Message Board</title>
-        <style>
-            .error {
-                opacity: 0;
-                color: red;
-            }
-            .error.show {
-                opacity: 1;
-            }
-        </style>
+        <meta charset="UTF-8">
+        <script src="../assets/scripts/forms.js" type="text/javascript"></script>
     </head>
     <body>
         <h1>Register</h1>
@@ -31,59 +23,23 @@
                 <input type="password" name="password2" minlength="6">
             </label>
             <br>
-            <span class="error" id="error">OK</span>
+            <span class="error" data-role="error">OK</span>
             <br>
             <input type="submit" value="Register"/>
         </form>
         <script>
-            const error = document.querySelector("#error");
-            function showError(msg) {
-                error.innerText = msg;
-                error.classList.add("show");
-            }
-
-            async function doRegister(formData) {
-                const response = await fetch("../api/register", {
-                    method: "POST",
-                    body: formData
-                });
-                if (response.status < 200 || response.status > 299) {
-                    showError("HTTP Error " + response.status);
-                    return;
+            // defined in forms.js
+            bindForm(
+                document.querySelector("#register"),
+                "../api/register",
+                (fd) => {
+                    if (fd.get("password2") !== fd.get("password")) {
+                        return "Passwords do not match!";
+                    }
+                    fd.delete("password2");
+                    return null;
                 }
-                const json = await response.json();
-                if ("error" in json) {
-                    showError(json["error"]);
-                    return;
-                }
-                // go back to home page
-                window.location = "../";
-            }
-
-            let requestPending = false;
-            function register(formData) {
-                if (requestPending) return;
-                requestPending = true;
-                doRegister(formData).then(() => {
-                    requestPending = false;
-                }).catch((e) => {
-                    console.error(e);
-                    showError("Unexpected error");
-                    requestPending = false;
-                });
-            }
-
-            const form = document.querySelector("#register");
-            form.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const fd = new FormData(form);
-                if (fd.get("password2") !== fd.get("password")) {
-                    showError("Passwords do not match!");
-                    return;
-                }
-                fd.delete("password2");
-                register(fd);
-            })
+            );
         </script>
     </body>
 </html>

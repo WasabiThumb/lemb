@@ -1,6 +1,10 @@
 // Handle the main message board page
 
-// Maintain a map to convert user IDs to user names. Cache this map to prevent unecessary requests.
+/**
+ * Maintain a map to convert user IDs to user names.
+ * Cache this map to prevent unecessary requests.
+ * @type {((id: number) => Promise<string>)}
+ */
 const getUserName = (() => {
     const cache = {};
     return ((id) => {
@@ -13,18 +17,23 @@ const getUserName = (() => {
     });
 })();
 
-// parent is #messages
-// "data" has author, content
+/**
+ * Adds a message <div> to the DOM.
+ * @param parent {HTMLDivElement} The <div id="messages"> to append the message to
+ * @param data { {author: number, content: string} } The message data
+ */
 function addMessage(parent, data) {
     const el = document.createElement("div");
     el.classList.add("message");
 
+    // Set the author of the message as soon as we know their canonical name
     const h3 = document.createElement("h3");
     getUserName(data.author).then((name) => {
         h3.innerText = name;
     }).catch(console.error);
     el.appendChild(h3);
 
+    // Set the content of the message
     const p = document.createElement("p");
     p.innerText = data.content;
     el.appendChild(p);
@@ -32,6 +41,12 @@ function addMessage(parent, data) {
     parent.appendChild(el);
 }
 
+/**
+ * Sends a message originating from the client.
+ * @param parent {HTMLDivElement} The <div id="messages"> to append the message to
+ * @param uid The user ID we are logged in as
+ * @param msg The message content
+ */
 function sendMessage(parent, uid, msg) {
     addMessage(parent, {
         author: uid,
@@ -51,7 +66,6 @@ window.addEventListener("DOMContentLoaded", () => {
     // Find our current user ID
     const uid = parseInt(document.querySelector("script#me").textContent);
     const loggedIn = uid !== 0;
-
     const messages = document.querySelector("#messages");
 
     // Request & consume the message history
@@ -75,6 +89,8 @@ window.addEventListener("DOMContentLoaded", () => {
         formSend.addEventListener("submit", (e) => {
             e.preventDefault();
             sendMessage(messages, uid, formSendText.value);
+            // Clear the input field
+            formSendText.value = "";
         });
     } else {
         // Make the send button report an error (must be logged in)

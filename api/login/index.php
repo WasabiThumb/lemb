@@ -33,6 +33,7 @@ $password = strval($_REQUEST["password"]);
 
 $db = new UsersDB();
 $user = $db->get_user_by_name($username);
+$db->close();
 $valid = false;
 if ($user !== false) {
     $valid = $user->check_password($password);
